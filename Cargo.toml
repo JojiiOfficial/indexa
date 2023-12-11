@@ -1,0 +1,9 @@
+[package]
+name = "indexa"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+mapstore = { path = "../mapstore" }
+bitcode = { version = "0.5", features = ["derive"] }
+serde = { version = "1", features = ["derive"] }
