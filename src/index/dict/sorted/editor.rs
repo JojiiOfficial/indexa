@@ -1,15 +1,14 @@
-use crate::index::dict::simple::item::DictItem;
-use crate::index::dict::simple::SimpleDict;
+use crate::index::dict::sorted::item::DictItem;
+use crate::index::dict::sorted::SortedDict;
 use crate::index::dict::{EditIndexDictionary, IndexDictionary};
 use crate::traits::deser::Deser;
 use crate::Result;
-use mapstore::backend::growable::GrowableBackend;
-use mapstore::backend::Backend;
+use bytestore::backend::growable::GrowableBackend;
 use std::borrow::Borrow;
 
 /// Edits SimpleDicts and allows insertion of new terms.
 pub struct DictEditor<'a, B, T> {
-    dict: &'a mut SimpleDict<B, T>,
+    dict: &'a mut SortedDict<B, T>,
 
     // Temp data
     id_cache: Vec<IdRef>,
@@ -18,7 +17,7 @@ pub struct DictEditor<'a, B, T> {
 
 impl<'a, B, T> DictEditor<'a, B, T> {
     #[inline]
-    pub(crate) fn new(dict: &'a mut SimpleDict<B, T>) -> Self {
+    pub(crate) fn new(dict: &'a mut SortedDict<B, T>) -> Self {
         Self {
             dict,
             id_cache: vec![],
@@ -30,7 +29,7 @@ impl<'a, B, T> DictEditor<'a, B, T> {
 /// Inserts a new `item` with DictItem<T> encoded in `data` into the given `dict` returning the ID.
 /// Asserts that there is no such T in the dictionary.
 fn insert_new_item<B: GrowableBackend, T: Ord + Deser>(
-    dict: &mut SimpleDict<B, T>,
+    dict: &mut SortedDict<B, T>,
     item: &T,
     data: &[u8],
 ) -> Result<u32> {
