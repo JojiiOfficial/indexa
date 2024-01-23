@@ -1,5 +1,5 @@
 # Indexa
-Highly efficient Rust framework to create in memory or memmapped inverted indexes.
+Rust framework to create highly efficient in memory or memmapped inverted indexes.
 This is built on using components provided by the [`bytestore`](https://github.com/JojiiOfficial/Bytestore) crate.
 
 # Example
