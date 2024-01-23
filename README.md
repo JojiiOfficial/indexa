@@ -40,14 +40,23 @@ fn main() {
     );
     editor.insert(item).unwrap();
 
+    // Commit the inserted items and write them into the index.
     editor.commit().unwrap();
+    // Closes the editor, applying post some processings such a sorting postings.
     editor.finish().unwrap();
 
+    // Build an index retriever using a term.
     let mut retriever_builder = RetrieverBuilder::new(&index);
     retriever_builder.add_term(&String::from("hello")).unwrap();
 
+    // The retrieving algorithm itself is generic. The `DefaultRetriever` yields all storage IDs
+    // that have at least one of the terms assigned.
+    //
+    // There are other retrieving algorithms that require all terms to be present - which need
+    // sorted postings.
     let retriever: DefaultRetriever<_> = retriever_builder.retriever();
     for storage_id in retriever {
+        // Get the item from the indexes storage
         let item = index.storage().get_item(storage_id as usize).unwrap();
         println!("{item}");
     }
@@ -56,5 +65,14 @@ fn main() {
     // Hello world!
     // Hello you!
 }
-
 ```
+
+# Presets
+| Name | Description |
+| ----------- | ----------- |
+| DefaultIndex | Normal inverted index implementation without any special features. |
+| CompressedIndex | Inverted index with compressed posting lists. Reduces the filesize for larger indexes with a light overhead when retrievig. |
+| CompressedIntIndex | Similar to CompressedIndex but dosen't store anything in the indexes 'storage' but rather uses the provided IDs when indexing. Can be useful if the actual data is not stored within the index itself. |
+| DefaultNgramIndex | Similar to DefaultIndex but uses NGram (or bytegrams) as index terms. Can be used if the indexed terms all have the same length. Reduces size of the index a lot. |
+| CompressedNgramIndex | Similar to CompressedIndex but made for Ngrams. |
+| CompressedIntNgramIndex | Similar to CompressedIntIndex but bade for Ngrams. |
